@@ -375,6 +375,22 @@ function buildMemberNav(items, itemHeading, itemsSeen, linktoFn) {
                     itemsNav += "</ul>";
                 }
 
+                if (docdash.instance && members.find(function (m) { return m.scope !== 'static'; } )) {
+                    itemsNav += "<ul class='fields'>";
+
+                    members.forEach(function (member) {
+                        if (!member.scope !== 'static') return;
+                        itemsNav += "<li data-type='field'";
+                        if(docdash.collapse)
+                            itemsNav += " style='display: none;'";
+                        itemsNav += ">";
+                        itemsNav += linkto(member.longname, member.name);
+                        itemsNav += "</li>";
+                    });
+
+                    itemsNav += "</ul>";
+                }
+
                 if (methods.length) {
                     itemsNav += "<ul class='methods'>";
 
