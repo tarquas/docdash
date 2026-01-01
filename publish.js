@@ -363,7 +363,8 @@ function buildMemberNav(items, itemHeading, itemsSeen, linktoFn) {
                     itemsNav += "<ul class='members'>";
 
                     members.forEach(function (member) {
-                        if (!member.scope === 'static') return;
+                        if (member.scope !== 'static') return;
+                        if (docdash.private === false && member.access === 'private') return;
                         itemsNav += "<li data-type='member'";
                         if(docdash.collapse)
                             itemsNav += " style='display: none;'";
@@ -380,6 +381,7 @@ function buildMemberNav(items, itemHeading, itemsSeen, linktoFn) {
 
                     members.forEach(function (member) {
                         if (member.scope === 'static') return;
+                        if (docdash.private === false && member.access === 'private') return;
                         itemsNav += "<li data-type='field'";
                         if(docdash.collapse)
                             itemsNav += " style='display: none;'";
@@ -391,24 +393,35 @@ function buildMemberNav(items, itemHeading, itemsSeen, linktoFn) {
                     itemsNav += "</ul>";
                 }
 
-                if (methods.length) {
+                if (docdash.static && methods.find(function (m) { return m.scope === 'static'; } )) {
+                    itemsNav += "<ul class='functions'>";
+
+                    methods.forEach(function (member) {
+                        if (member.scope !== 'static') return;
+                        if (docdash.private === false && member.access === 'private') return;
+                        itemsNav += "<li data-type='function'";
+                        if(docdash.collapse)
+                            itemsNav += " style='display: none;'";
+                        itemsNav += ">";
+                        itemsNav += linkto(member.longname, member.name);
+                        itemsNav += "</li>";
+                    });
+
+                    itemsNav += "</ul>";
+                }
+
+                if (methods.find(function (m) { return m.scope !== 'static'; } )) {
                     itemsNav += "<ul class='methods'>";
 
-                    methods.forEach(function (method) {
-                        if (docdash.static === false && method.scope === 'static') return;
-                        if (docdash.private === false && method.access === 'private') return;
-
-                        var navItem = '';
-                        var navItemLink = linkto(method.longname, method.name);
-
-                        navItem += "<li data-type='method'";
+                    methods.forEach(function (member) {
+                        if (member.scope === 'static') return;
+                        if (docdash.private === false && member.access === 'private') return;
+                        itemsNav += "<li data-type='method'";
                         if(docdash.collapse)
-                            navItem += " style='display: none;'";
-                        navItem += ">";
-                        navItem += navItemLink;
-                        navItem += "</li>";
-
-                        itemsNav += navItem;
+                            itemsNav += " style='display: none;'";
+                        itemsNav += ">";
+                        itemsNav += linkto(member.longname, member.name);
+                        itemsNav += "</li>";
                     });
 
                     itemsNav += "</ul>";
